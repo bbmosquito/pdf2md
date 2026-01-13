@@ -324,29 +324,46 @@ def batch(
     # Create processor
     processor = BatchProcessor(converter, max_workers=workers)
 
-    # Process with progress bar
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TaskProgressColumn(),
-        TextColumn("[bold cyan]{task.fields[current]}[/bold cyan]/{task.fields[total]}"),
-        console=console
-    ) as progress:
+    # Reduce log noise during batch processing to keep progress bar visible
+    import logging
+    docling_logger = logging.getLogger('docling')
+    rapidocr_logger = logging.getLogger('RapidOCR')
+    old_docling_level = docling_logger.level
+    old_rapidocr_level = rapidocr_logger.level
+    docling_logger.setLevel(logging.WARNING)
+    rapidocr_logger.setLevel(logging.WARNING)
 
-        task = progress.add_task(
-            "Converting PDFs...",
-            total=queue.pending_count,
-            current=0,
-            total_count=queue.pending_count
-        )
+    try:
+        # Process with progress bar
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            TextColumn("[bold cyan]{task.completed}[/bold cyan]/{task.total}"),
+            console=console,
+            refresh_per_second=10  # Control refresh rate
+        ) as progress:
+            task = progress.add_task(
+                "Converting PDFs...",
+                total=queue.pending_count
+            )
 
-        def progress_callback(current: int, total: int, message: str):
-            progress.update(task, advance=1, current=current)
-            # Optionally display message
-            # console.print(f"  {message}")
+            completed_count = [0]  # Use list to allow modification in closure
 
-        results = processor.process(queue, progress_callback)
+            def progress_callback(current: int, total: int, message: str):
+                # Update progress bar manually when callback is invoked
+                new_completed = current - completed_count[0]
+                if new_completed > 0:
+                    progress.update(task, advance=new_completed)
+                    completed_count[0] = current
+
+            results = processor.process(queue, progress_callback)
+
+    finally:
+        # Restore log levels
+        docling_logger.setLevel(old_docling_level)
+        rapidocr_logger.setLevel(old_rapidocr_level)
 
     # Display summary
     summary = processor.get_summary()
@@ -369,7 +386,12 @@ def batch(
     if failed_results:
         console.print("\n[red]Failed conversions:[/red]")
         for result in failed_results:
-            console.print(f"  • {result.source_path.name}: {result.error_message}")
+            # Ensure proper encoding for Chinese filenames
+            try:
+                filename = str(result.source_path.name)
+            except:
+                filename = result.source_path.name.encode('utf-8', errors='ignore').decode('utf-8')
+            console.print(f"  • {filename}: {result.error_message}")
 
 
 @main.command()

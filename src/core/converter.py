@@ -268,7 +268,8 @@ class DoclingConverter:
                 result = subprocess.check_output(
                     "wmic path win32_VideoController get name",
                     shell=True,
-                    text=True
+                    text=True,
+                    stderr=subprocess.DEVNULL
                 )
                 if "AMD" in result or "Radeon" in result:
                     logger.info("Detected AMD GPU on Windows")
@@ -322,9 +323,10 @@ class DoclingConverter:
 
             output_dir = Path(output_dir)
 
-            # Create output directories
+            # Create output directories (explicitly create output_dir first)
+            output_dir.mkdir(parents=True, exist_ok=True)
             images_dir = output_dir / "images"
-            images_dir.mkdir(parents=True, exist_ok=True)
+            images_dir.mkdir(exist_ok=True)
 
             # Log memory before conversion
             self.memory_manager.log_stats("before conversion")
@@ -366,6 +368,10 @@ class DoclingConverter:
             duration = time.time() - start_time
 
             self.memory_manager.log_stats("after conversion")
+
+            # Force garbage collection to free memory after conversion
+            import gc
+            gc.collect()
 
             if progress_callback:
                 progress_callback(1.0, "Conversion complete!")

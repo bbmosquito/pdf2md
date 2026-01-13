@@ -205,7 +205,8 @@ class SystemDetector:
                 result = subprocess.check_output(
                     "wmic cpu get name",
                     shell=True,
-                    text=True
+                    text=True,
+                    stderr=subprocess.DEVNULL
                 )
                 lines = result.strip().split('\n')
                 if len(lines) > 1:
@@ -287,7 +288,8 @@ class SystemDetector:
                             ["wmic", "path", "win32_VideoController", "get", "name,AdapterRAM"],
                             capture_output=True,
                             text=True,
-                            timeout=5
+                            timeout=5,
+                            stderr=subprocess.DEVNULL
                         )
                         if result.returncode == 0:
                             output = result.stdout
@@ -355,7 +357,8 @@ class SystemDetector:
                     result = subprocess.check_output(
                         "wmic cpu get name",
                         shell=True,
-                        text=True
+                        text=True,
+                        stderr=subprocess.DEVNULL
                     )
                     if "395" in result or "AI MAX" in result:
                         vendor = "amd"

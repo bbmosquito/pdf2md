@@ -10,9 +10,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 from threading import Lock
 
-from batch.task_queue import TaskQueue, ConversionTask, TaskStatus
-from core.converter import DoclingConverter, ConversionResult
-from utils.logger import ProgressLogger
+from src.batch.task_queue import TaskQueue, ConversionTask, TaskStatus
+from src.core.converter import DoclingConverter, ConversionResult
+from src.utils.logger import ProgressLogger
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +70,24 @@ class BatchProcessor:
 
         logger.info(f"Starting batch processing of {total_tasks} task(s)")
 
+        # Check memory status and adjust workers if needed
+        from src.core.memory_manager import MemoryManager
+        mem_manager = MemoryManager()
+        pressure = mem_manager.get_memory_pressure()
+
+        # If memory pressure is critical or high, reduce workers
+        actual_workers = self.max_workers
+        if pressure == "critical":
+            actual_workers = 1
+            logger.warning(f"Critical memory pressure detected! Reducing workers to 1 for sequential processing")
+        elif pressure == "high":
+            actual_workers = max(1, self.max_workers // 2)
+            logger.warning(f"High memory pressure detected! Reducing workers from {self.max_workers} to {actual_workers}")
+
+        logger.info(f"Using {actual_workers} worker(s) for batch processing")
+
         with ProgressLogger(logger, "Batch processing") as progress:
-            with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            with ThreadPoolExecutor(max_workers=actual_workers) as executor:
                 # Submit all pending tasks
                 futures = {}
                 for task in queue.get_pending():
@@ -154,6 +170,11 @@ class BatchProcessor:
                 duration_seconds=0,
                 error_message=error_msg
             )
+
+        finally:
+            # Force garbage collection after each task to free memory
+            import gc
+            gc.collect()
 
         return result
 
