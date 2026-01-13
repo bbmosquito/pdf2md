@@ -367,13 +367,6 @@ python pdf2md.py convert doc.pdf --workers 4
 2. Verify GPU acceleration is enabled in logs
 3. Check Windows Task Manager → Performance → GPU
 
-## 📚 Documentation
-
-- **[QUICKSTART_AMD.md](QUICKSTART_AMD.md)** - 5-minute quick start guide
-- **[PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md)** - Detailed performance optimization guide (6000+ words)
-- **[OPTIMIZATION_SUMMARY.md](OPTIMIZATION_SUMMARY.md)** - Optimization work summary
-- **[thinkall.md](thinkall.md)** - Original development documentation
-
 ## 🤝 Contributing
 
 Contributions welcome! Please feel free to submit issues or pull requests.
@@ -385,7 +378,7 @@ MIT License
 ## 🗺️ Roadmap
 
 ### Completed ✅
-- [x] GPU acceleration (AMD ROCm, NVIDIA CUDA, Apple MPS)
+- [x] GPU acceleration (AMD ROCm, NVIDIA CUDA)
 - [x] Automatic hardware detection
 - [x] Performance optimization for AMD AI MAX+ 395
 - [x] Intelligent memory management
