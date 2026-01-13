@@ -21,7 +21,6 @@
 | AMD CPU优化 | 30 分钟 | 2.0x |
 | **AMD GPU加速** | **15 分钟** | **4.0x** |
 
-> **更多性能信息**: 查看 [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) 和 [OPTIMIZATION_SUMMARY.md](OPTIMIZATION_SUMMARY.md)
 
 ## 📋 Requirements
 
