@@ -2,54 +2,16 @@
 
 **A high-precision PDF to Markdown converter optimized for large scanned PDF files and AMD platforms.**
 
-**Version**: 1.1.1 (2025-01-13)
-**Status**: Stable ✅
-
----
-
-## ✨ What's New in v1.1.1
-
-### 🎯 Critical Fix: Progress Bar Visibility
-
-**Problem**: Progress bar was not visible during batch conversion (appeared stuck at "0/30")
-
-**Root Cause**: Docling/RapidOCR INFO log output overwhelmed the Rich progress bar display
-
-**Solution**: Temporarily reduce log level to WARNING during batch processing
-
-**Result**: ✅ Progress bar now clearly shows conversion progress from 0% to 100%
-
-### Test Results
-
-Before fix:
-```
-[大量 INFO 日志]
-⠋ Converting PDFs... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0/30
-```
-
-After fix:
-```
-✓ 完成: 文件1.pdf
-✓ 完成: 文件2.pdf
-  Converting PDFs... ████████────────────────────────────────  20% 6/30
-```
-
----
-
 ## ✨ Features
 
 - **⚡ GPU Acceleration** - Auto-detects and uses AMD/NVIDIA/Apple GPUs for 4x speedup
 - **💾 Memory-efficient processing** - Handles large PDFs (>200MB) with streaming/chunked processing
 - **🔍 Advanced OCR** - Converts scanned PDFs using Docling's advanced OCR (RapidOCR)
-- **🚀 Batch processing** - Convert multiple files in parallel with **visible progress bar** ✨
+- **🚀 Batch processing** - Convert multiple files in parallel with optimal worker count
 - **🖼️ Image extraction** - Extracts images to separate folders
 - **📐 Formula handling** - LaTeX formulas saved as images
-- **📊 Progress tracking** - Real-time progress display (FIXED in v1.1.1)
+- **📊 Progress tracking** - Real-time progress display
 - **🎯 Platform optimized** - Specialized optimizations for AMD AI MAX+ 395/8060S
-- **🌏 Chinese filename support** - Full UTF-8 support for Chinese and mixed-language filenames
-- **✅ Clean output** - Progress bar not overwhelmed by log messages (v1.1.1)
-
----
 
 ## 🎯 Performance
 
@@ -59,9 +21,6 @@ After fix:
 | AMD CPU优化 | 30 分钟 | 2.0x |
 | **AMD GPU加速** | **15 分钟** | **4.0x** |
 
-> **更多性能信息**: 查看 [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md)
-
----
 
 ## 📋 Requirements
 
@@ -70,7 +29,7 @@ After fix:
 - **Memory**: 16GB+ RAM recommended, 128GB optimal
 - **GPU**: Optional (AMD ROCm, NVIDIA CUDA, or Apple MPS)
 
----
+## 🔧 Installation
 
 ## 🔧 Installation
 
@@ -88,14 +47,21 @@ pip install docling[ocr]
 
 ### 3. Install PyTorch for GPU acceleration (optional but recommended):
 
+#### For AMD GPUs (ROCm):
+
 ```bash
-# For AMD GPUs (ROCm)
 pip install torch --index-url https://download.pytorch.org/whl/rocm
+```
 
-# For NVIDIA GPUs (CUDA)
+#### For NVIDIA GPUs (CUDA):
+
+```bash
 pip install torch
+```
 
-# For CPU-only
+#### For CPU-only:
+
+```bash
 pip install torch
 ```
 
@@ -105,38 +71,46 @@ pip install torch
 python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
 
----
-
 ## 🚀 Quick Start
 
-### Convert a single PDF:
+### Convert a single PDF (with auto GPU acceleration):
 
 ```bash
 python pdf2md.py convert document.pdf
 ```
 
-### Batch convert directory (with visible progress bar):
+This creates:
+```
+document_md/
+├── document.md
+└── images/
+    ├── image_0001.png
+    ├── image_0002.png
+    └── ...
+```
+
+### Convert with custom output:
+
+```bash
+python pdf2md.py convert document.pdf -o ./output
+```
+
+### Disable GPU acceleration (CPU-only):
+
+```bash
+python pdf2md.py convert document.pdf --no-gpu
+```
+
+### Batch convert directory with 12 workers:
 
 ```bash
 python pdf2md.py batch ./pdfs --workers 12
 ```
 
-**Expected output (v1.1.1)**:
-```
-Found 30 PDF file(s) to convert
-✓ 完成: 文件1.pdf
-✓ 完成: 文件2.pdf
-  Converting PDFs... ████████────────────────────────────────  20% 6/30
-✓ 完成: 文件3.pdf
-  Converting PDFs... ████████████████────────────────────────  40% 12/30
-...
-╔══════════════════════════════════════════════════════════════╗
-║                 Batch Conversion Complete                     ║
-╠══════════════════════════════════════════════════════════════╣
-║ Total: 30                                                     ║
-║ Successful: 30                                                ║
-║ Failed: 0                                                     ║
-╚══════════════════════════════════════════════════════════════╝
+### Convert multiple specific files:
+
+```bash
+python pdf2md.py multiple file1.pdf file2.pdf file3.pdf
 ```
 
 ### Run performance benchmark:
@@ -144,8 +118,6 @@ Found 30 PDF file(s) to convert
 ```bash
 python benchmark.py report.pdf
 ```
-
----
 
 ## 📖 Command Reference
 
@@ -161,6 +133,23 @@ python pdf2md.py convert [OPTIONS] PDF
 - `--ocr/--no-ocr` - Enable/disable OCR (default: enabled)
 - `--dpi INT` - Image DPI for rendering (default: 200)
 - `--gpu/--no-gpu` - Enable/disable GPU acceleration (default: auto-detect)
+- `--device {auto,cuda,mps,cpu}` - Accelerator device (default: auto)
+- `--batch-size INT` - OCR/Layout batch size (default: auto-detect)
+
+**Examples:**
+```bash
+# Auto-detect optimal settings (recommended)
+python pdf2md.py convert doc.pdf
+
+# Force CPU mode
+python pdf2md.py convert doc.pdf --no-gpu
+
+# Custom batch size for large GPU memory
+python pdf2md.py convert doc.pdf --batch-size 64
+
+# High DPI for better quality
+python pdf2md.py convert doc.pdf --dpi 300
+```
 
 ### `batch` - Convert all PDFs in a directory
 
@@ -173,6 +162,13 @@ python pdf2md.py batch [OPTIONS] DIRECTORY
 - `--pattern GLOB` - File pattern (default: *.pdf)
 - `-r, --recursive` - Search subdirectories
 - `-w, --workers INT` - Parallel workers (default: auto-detect)
+- `--ocr/--no-ocr` - Enable/disable OCR
+
+### `multiple` - Convert specific files
+
+```bash
+python pdf2md.py multiple [OPTIONS] PDF1 [PDF2 ...]
+```
 
 ### `info` - Show system information
 
@@ -180,33 +176,23 @@ python pdf2md.py batch [OPTIONS] DIRECTORY
 python pdf2md.py info
 ```
 
----
-
-## 🧪 Testing
-
-### Test Scripts Included
-
-Four comprehensive test scripts verify the progress bar fix:
-
-1. **test_progress_real.py** - Basic progress bar behavior test
-2. **test_batch_simulation.py** - Batch processing simulation
-3. **test_real_batch.py** - Log interference comparison test
-4. **test_actual_batch.py** - Actual batch processing test
-
-### Running Tests
+### `benchmark` - Run performance benchmark (NEW)
 
 ```bash
-# Quick progress bar test
-python test_progress_real.py
-
-# Log interference comparison (shows before/after fix)
-python test_real_batch.py
-
-# Actual batch processing with real PDFs
-python test_actual_batch.py
+python benchmark.py PDF [OPTIONS]
 ```
 
----
+**Options:**
+- `-o, --output FILE` - Save results to JSON file
+
+**Examples:**
+```bash
+# Benchmark with test PDF
+python benchmark.py report.pdf
+
+# Save results
+python benchmark.py report.pdf -o results.json
+```
 
 ## ⚙️ Configuration
 
@@ -215,35 +201,83 @@ Edit `config.yaml` to customize defaults:
 ```yaml
 # Conversion settings
 conversion:
+  output_format: markdown
   ocr_enabled: true
   ocr_languages: ["en", "zh-CN", "zh-TW"]
 
-# Memory management
+# Memory management (OPTIMIZED for large systems)
 memory:
-  max_pages_in_memory: 20
-  process_chunk_size: 15
+  max_pages_in_memory: 20  # Increased for 128GB systems
+  process_chunk_size: 15   # Larger chunks for better throughput
 
 # Processing settings
 processing:
-  max_workers: 12
+  max_workers: 12  # Optimized for AMD multi-core systems
   dpi: 200
 
-# Performance optimization
+# Performance optimization (GPU acceleration)
 performance:
-  enable_gpu: true
-  accelerator_device: "auto"
+  enable_gpu: true           # Auto-detect and enable GPU
+  accelerator_device: "auto" # Options: "auto", "cuda", "mps", "cpu"
+  num_threads: null          # Auto-detect (physical core count)
+
+  # Batch sizes for GPU processing
   ocr_batch_size: 64
+  layout_batch_size: 64
+  table_batch_size: 8
+
+# Output settings
+output:
+  save_images: true
+  image_format: png
+  extract_formulas_as_images: true
 ```
 
----
+**推荐配置**:
+- **大内存系统** (>=64GB): 使用默认配置 (chunk_size=15, workers=12)
+- **小内存系统** (<16GB): 降低 chunk_size=5, workers=4
+- **GPU系统**: 使用 ocr_batch_size=64
+- **CPU-only**: 使用 ocr_batch_size=16
+
+## 📁 Project Structure
+
+```
+pdf2md/
+├── pdf2md.py                    # Main entry point
+├── benchmark.py                 # Performance benchmark tool (NEW)
+├── config.yaml                  # Configuration file (OPTIMIZED)
+├── requirements.txt             # Python dependencies
+├── README.md                    # This file
+├── QUICKSTART_AMD.md            # 5-minute quick start guide (NEW)
+├── PERFORMANCE_OPTIMIZATION.md  # Detailed optimization guide (NEW)
+├── OPTIMIZATION_SUMMARY.md      # Optimization summary (NEW)
+└── src/
+    ├── cli.py                   # Command-line interface (ENHANCED)
+    ├── core/
+    │   ├── converter.py         # Core conversion engine (GPU ACCELERATED)
+    │   ├── pdf_reader.py        # PDF reading utilities
+    │   └── memory_manager.py    # Memory management (OPTIMIZED)
+    ├── batch/
+    │   ├── batch_processor.py   # Batch processing
+    │   └── task_queue.py        # Task queue management
+    └── utils/
+        ├── system_detector.py   # Hardware detection (NEW)
+        ├── logger.py            # Logging utilities
+        └── config.py            # Configuration management
+```
 
 ## 💡 Performance Tips
 
 ### 1. Enable GPU acceleration
 
+GPU acceleration provides **2-3x** speedup:
+
 ```bash
 # Auto-detect GPU (recommended)
 python pdf2md.py convert doc.pdf
+
+# Explicitly enable GPU
+python pdf2md.py convert doc.pdf --gpu
 ```
 
 ### 2. Optimize batch size for your GPU
@@ -255,17 +289,25 @@ python pdf2md.py convert doc.pdf
 | 8-16GB     | 32-64                |
 | >16GB      | 64-128               |
 
+```bash
+python pdf2md.py convert doc.pdf --batch-size 64
+```
+
 ### 3. Use optimal worker count
 
 ```bash
 # Auto-detect (recommended)
-python pdf2md.py batch ./pdfs
+python pdf2md.py convert doc.pdf
 
-# Manually specify
-python pdf2md.py batch ./pdfs --workers 16
+# Manually specify for your system
+python pdf2md.py convert doc.pdf --workers 16
 ```
 
----
+### 4. Run benchmarks to find optimal settings
+
+```bash
+python benchmark.py your_large_file.pdf
+```
 
 ## 🐛 Troubleshooting
 
@@ -276,65 +318,71 @@ pip install docling[ocr]
 
 ### "GPU not detected"
 
+**Symptoms**: Log shows "No GPU detected, using CPU"
+
+**Solutions**:
 ```bash
 # 1. Verify PyTorch installation
 python -c "import torch; print(torch.cuda.is_available())"
 
-# 2. Reinstall PyTorch
-pip install --upgrade torch
+# 2. Reinstall PyTorch with ROCm (AMD)
+pip uninstall torch -y
+pip install torch --index-url https://download.pytorch.org/whl/rocm
+
+# 3. Reinstall with CUDA (NVIDIA)
+pip uninstall torch -y
+pip install torch
+
+# 4. Update Docling
+pip install --upgrade docling
 ```
 
-### Progress bar not visible
+### "MemoryError" or system slowdown
 
-**Status**: ✅ Fixed in v1.1.1
-
-If you still don't see the progress bar clearly:
-
-1. Verify you have v1.1.1 or later:
+**Solutions**:
 ```bash
-type VERSION
+# Reduce batch size
+python pdf2md.py convert doc.pdf --batch-size 16
+
+# Reduce workers
+python pdf2md.py convert doc.pdf --workers 4
+
+# Or edit config.yaml
+# performance:
+#   ocr_batch_size: 16
+# processing:
+#   max_workers: 4
 ```
 
-2. Run the test to verify:
-```bash
-python test_real_batch.py
-```
+### OCR quality issues
 
----
+- Increase DPI: `--dpi 300`
+- Check OCR language support in config.yaml
+- Ensure PDF images are high resolution
 
-## 📚 Documentation
+### Slow performance on large files
 
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history (v1.1.0, v1.1.1)
-- **[FINAL_REPORT.md](FINAL_REPORT.md)** - Complete release report (v1.1.1)
-- **[PROGRESS_BAR_FIX_REPORT.md](PROGRESS_BAR_FIX_REPORT.md)** - Progress bar fix details
-- **[QUICKSTART_AMD.md](QUICKSTART_AMD.md)** - 5-minute quick start guide
-- **[PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md)** - Performance optimization guide
-
----
+**Check**:
+1. Run `python benchmark.py your_file.pdf` to diagnose
+2. Verify GPU acceleration is enabled in logs
+3. Check Windows Task Manager → Performance → GPU
 
 ## 🤝 Contributing
 
 Contributions welcome! Please feel free to submit issues or pull requests.
 
----
-
 ## 📄 License
 
 MIT License
 
----
-
 ## 🗺️ Roadmap
 
 ### Completed ✅
-- [x] GPU acceleration (AMD ROCm, NVIDIA CUDA, Apple MPS)
+- [x] GPU acceleration (AMD ROCm, NVIDIA CUDA)
 - [x] Automatic hardware detection
 - [x] Performance optimization for AMD AI MAX+ 395
 - [x] Intelligent memory management
 - [x] Benchmarking tool
-- [x] Chinese filename support (v1.1.0)
-- [x] Progress bar visibility fix (v1.1.1)
-- [x] Clean console output (v1.1.1)
 
 ### In Progress 🚧
 - [ ] Multi-process batch processing
@@ -346,10 +394,3 @@ MIT License
 - [ ] Output to HTML/JSON formats
 - [ ] Distributed processing
 - [ ] NPU integration
-
----
-
-**Version**: 1.1.1 (2025-01-13)
-**Status**: Stable ✅
-**Test Coverage**: ✅ All tests passing
-**Package**: PDF2MD_v1.1.1.zip
