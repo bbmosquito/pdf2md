@@ -1,0 +1,30 @@
+# PDF2MD - Large PDF to Markdown Converter
+# Python 3.10+ required
+# Optimized for AMD AI MAX+ 395 / 8060S Platform
+
+# Core dependencies
+docling>=2.0.0
+pymupdf>=1.24.0
+Pillow>=11.0.0
+python-dateutil>=2.9.0
+
+# CLI and progress
+rich>=13.9.0
+click>=8.1.0
+tqdm>=4.67.0
+
+# Utilities
+pyyaml>=6.0.2
+chardet>=5.2.0
+
+# GPU acceleration support (OPTIONAL but RECOMMENDED)
+# Install PyTorch with ROCm support for AMD GPUs
+# For AMD ROCm on Windows (2025+ support):
+#   pip install torch --index-url https://download.pytorch.org/whl/rocm
+# For NVIDIA CUDA:
+#   pip install torch
+# For CPU-only:
+#   pip install torch
+
+# System monitoring
+psutil>=5.9.0

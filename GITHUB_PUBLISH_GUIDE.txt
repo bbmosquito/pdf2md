@@ -1,0 +1,309 @@
+╔═════════════════════════════════════════════════════════════════════╗
+║          PDF2MD 项目 GitHub 发布指南                                ║
+╚═════════════════════════════════════════════════════════════════════╝
+
+【重要安全提示】
+⚠️ 请勿在任何情况下分享您的GitHub账号密码
+⚠️ 使用Personal Access Token (PAT) 进行认证
+⚠️ 不要在脚本中硬编码凭据
+
+═════════════════════════════════════════════════════════════════════
+
+【发布前准备清单】
+
+1. GitHub账号
+   □ 确保有GitHub账号（无账号请访问 github.com 注册）
+
+2. 创建Personal Access Token (PAT)
+   □ 访问：https://github.com/settings/tokens
+   □ 点击 "Generate new token" → "Generate new token (classic)"
+   □ 设置Token名称：pdf2md-publish
+   □ 选择权限（勾选以下）：
+      ☑ repo (完整仓库访问权限)
+      ☑ workflow (GitHub Actions)
+   □ 设置过期时间（建议90天）
+   □ 点击生成
+   □ ⚠️ 重要：复制并保存Token（只显示一次！）
+
+3. 安装Git
+   □ 下载：https://git-scm.com/downloads
+   □ 安装时选择默认选项即可
+
+4. 准备项目信息
+   □ 仓库名称：pdf2md（建议）
+   □ 描述：High-precision PDF to Markdown converter with GPU acceleration
+   □ 可见性：Public（公开）或 Private（私有）
+
+═════════════════════════════════════════════════════════════════════
+
+【方法一：使用Git命令行发布】
+
+步骤1：打开命令行/终端
+   - Windows: 按 Win+R，输入 cmd，回车
+   - 或右键文件夹 → "在此处打开终端"
+
+步骤2：导航到Final文件夹
+   cd D:\pdf2md\Final
+
+步骤3：初始化Git仓库
+   git init
+
+步骤4：创建.gitignore文件（如果不存在）
+   创建文件 .gitignore，内容如下：
+
+   # Python
+   __pycache__/
+   *.py[cod]
+   *$py.class
+   *.so
+   .Python
+   venv/
+   env/
+
+   # Project specific
+   *.log
+   pdf2md.log
+   .DS_Store
+   tmpclaude-*
+   *.tmp
+
+   # IDE
+   .vscode/
+   .idea/
+   *.swp
+   *.swo
+
+   # Build
+   dist/
+   build/
+   *.egg-info/
+
+步骤5：添加所有文件到Git
+   git add .
+
+步骤6：创建首次提交
+   git commit -m "Initial commit: PDF2MD v1.0
+
+   - PDF to Markdown converter with GPU acceleration
+   - Support for AMD ROCm, NVIDIA CUDA, Apple MPS
+   - Automatic installation script
+   - Complete documentation"
+
+步骤7：在GitHub上创建新仓库
+   a. 访问 https://github.com/new
+   b. 填写仓库信息：
+      - Repository name: pdf2md
+      - Description: High-precision PDF to Markdown converter
+      - 选择 Public 或 Private
+      - ⚠️ 不要勾选 "Add a README file"（我们已有）
+      - ⚠️ 不要勾选 "Add .gitignore"
+   c. 点击 "Create repository"
+
+步骤8：关联远程仓库
+   执行以下命令（替换YOUR_USERNAME为您的GitHub用户名）：
+
+   git remote add origin https://github.com/YOUR_USERNAME/pdf2md.git
+   git branch -M main
+   git push -u origin main
+
+   当提示输入用户名时：
+     Username: YOUR_GITHUB_USERNAME
+     Password: YOUR_PERSONAL_ACCESS_TOKEN
+
+步骤9：验证发布
+   访问 https://github.com/YOUR_USERNAME/pdf2md
+   检查所有文件是否已上传
+
+═════════════════════════════════════════════════════════════════════
+
+【方法二：使用GitHub Desktop（图形界面，推荐新手）】
+
+步骤1：安装GitHub Desktop
+   - 下载：https://desktop.github.com/
+
+步骤2：登录GitHub Desktop
+   - 打开GitHub Desktop
+   - 点击 "Sign in to GitHub.com"
+   - 使用浏览器授权登录
+
+步骤3：创建新仓库
+   - File → New Repository
+   - 填写信息：
+     Name: pdf2md
+     Description: PDF to Markdown converter
+     Local Path: D:\pdf2md\Final
+   - 勾选 "Initialize this repository with a README"
+   - 点击 "Create Repository"
+
+步骤4：发布到GitHub
+   - 点击 "Publish repository"
+   - 选择 Public 或 Private
+   - 勾选 "Keep this code private"（如选私有）
+   - 点击 "Publish repository"
+
+═════════════════════════════════════════════════════════════════════
+
+【创建GitHub Release（可选，推荐）】
+
+发布版本让用户更容易下载：
+
+1. 访问您的仓库页面
+2. 点击右侧 "Releases"
+3. 点击 "Create a new release"
+4. 填写信息：
+   - Tag version: v1.0.0
+   - Release title: PDF2MD v1.0 - Initial Release
+   - Description:
+     🎉 PDF2MD 首次发布
+
+     ✨ 主要特性:
+     - PDF to Markdown 转换
+     - GPU 加速 (AMD/NVIDIA/Apple)
+     - 一键安装脚本
+     - 完整文档
+
+     📦 下载:
+     - PDF2MD_Complete_Package_v1.0.zip
+
+     🚀 快速开始:
+     1. 解压 ZIP 文件
+     2. 运行 install.bat (Windows)
+     3. 开始使用！
+
+   - 勾选 "Set as the latest release"
+5. 上传 ZIP 文件：
+   - Attach binaries → 选择 PDF2MD_Complete_Package_v1.0.zip
+6. 点击 "Publish release"
+
+═════════════════════════════════════════════════════════════════════
+
+【添加开源许可证（推荐）】
+
+1. 在GitHub仓库页面
+2. 点击 "Add file" → "Create new file"
+3. 文件名：LICENSE
+4. 选择模板：MIT License
+5. 点击 "Review and submit"
+6. 点击 "Commit changes"
+
+MIT License内容（也可手动创建）：
+
+MIT License
+
+Copyright (c) 2025 PDF2MD Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+═════════════════════════════════════════════════════════════════════
+
+【完善仓库信息】
+
+1. 添加仓库Topics（标签）
+   - 点击仓库页面 "About" 右侧的 ⚙️
+   - 添加标签：pdf, markdown, ocr, gpu-acceleration, python, converter
+
+2. 设置仓库Stars
+   - 分享给同事，请求Star
+
+3. 启用GitHub Discussions（可选）
+   - Settings → General → Features
+   - 勾选 "Discussions"
+
+4. 添加仓库徽章（README.md顶部）
+
+   [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+   [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+   [![GPU](https://img.shields.io/badge/GPU-AMD%20%7C%20NVIDIA%20%7C%20Apple-orange.svg)](README.md)
+
+═════════════════════════════════════════════════════════════════════
+
+【常见问题】
+
+Q: 忘记保存Personal Access Token怎么办？
+A: 需要重新生成。访问 https://github.com/settings/tokens 删除旧的，创建新的。
+
+Q: 推送时提示"Authentication failed"？
+A: 检查Token是否正确，确保Token有repo权限。
+
+Q: 如何更新已发布的仓库？
+A:
+   git add .
+   git commit -m "Update message"
+   git push
+
+Q: 如何删除错误的提交？
+A:
+   git reset --soft HEAD~1  # 撤销最后一次提交
+   git push --force        # 强制推送（谨慎使用！）
+
+Q: Public仓库和Private仓库有什么区别？
+A:
+   - Public: 所有人可见，可Star/Fork
+   - Private: 仅您和协作者可见
+
+═════════════════════════════════════════════════════════════════════
+
+【安全最佳实践】
+
+✓ DO - 推荐做法：
+   ✓ 使用Personal Access Token而非密码
+   ✓ 定期更新Token（建议90天）
+   ✓ 为敏感项目使用Private仓库
+   ✓ 在.gitignore中排除敏感文件
+   ✓ 定期检查仓库访问日志
+
+✗ DON'T - 避免做法：
+   ✗ 分享您的密码或Token
+   ✗ 在代码中硬编码凭据
+   ✗ 将敏感信息提交到公开仓库
+   ✗ 使用简单或可猜测的Token名称
+
+═════════════════════════════════════════════════════════════════════
+
+【后续维护建议】
+
+1. 版本控制
+   - 使用Git标签标记版本
+   - 遵循语义化版本：v1.0.0, v1.0.1, v2.0.0
+
+2. 分支管理
+   - main: 主分支，稳定版本
+   - develop: 开发分支
+   - feature/*: 功能分支
+
+3. 发布流程
+   - develop → 合并到 main → 打Tag → 创建Release
+
+4. 文档更新
+   - 及时更新CHANGELOG.md
+   - 保持README.md最新
+
+═════════════════════════════════════════════════════════════════════
+
+【需要帮助？】
+
+GitHub官方文档:
+https://docs.github.com/en
+
+Git官方文档:
+https://git-scm.com/doc
+
+═════════════════════════════════════════════════════════════════════
+                        祝您发布顺利！
+═════════════════════════════════════════════════════════════════════

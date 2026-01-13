@@ -1,0 +1,51 @@
+# PDF2MD Configuration File
+# 平台：AMD AI MAX+ 395 (32GB RAM + 96GB VRAM)
+# 优化：充分利用96GB GPU显存
+
+# Conversion settings
+conversion:
+  output_format: markdown
+  ocr_enabled: true
+  ocr_languages: ["en", "zh-CN", "zh-TW"]  # English, Simplified Chinese, Traditional Chinese
+
+# Memory management (32GB RAM优化)
+memory:
+  max_pages_in_memory: 12      # 32GB系统最优值
+  max_image_size_mb: 100       # 高质量图片
+  enable_memory_monitoring: true
+  process_chunk_size: 10       # 平衡性能和内存
+
+# Processing settings
+processing:
+  max_workers: 8               # 32GB内存安全值
+  dpi: 200                     # 扫描质量
+  timeout_seconds: 600         # 大页面超时
+
+# Performance optimization (96GB VRAM充分利用)
+performance:
+  # GPU acceleration
+  enable_gpu: true
+  accelerator_device: "auto"   # Auto-detect AMD ROCm
+  num_threads: 16              # AMD AI MAX+ 395 物理核心数
+
+  # GPU批处理大小（充分利用96GB显存）
+  ocr_batch_size: 128          # 超大批次，发挥96GB显存优势
+  layout_batch_size: 128       # 超大批次，发挥96GB显存优势
+  table_batch_size: 16         # 大批次
+
+  # Memory limits
+  max_process_memory_gb: null  # Auto-detect (32GB * 0.7 = 22GB)
+
+# Output settings
+output:
+  save_images: true
+  image_format: png
+  extract_formulas_as_images: true
+  preserve_tables: true
+  preserve_code_blocks: true
+
+# Logging
+logging:
+  level: INFO
+  file: pdf2md.log
+  console: true
